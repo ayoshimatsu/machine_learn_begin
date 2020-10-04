@@ -1,0 +1,4 @@
+venv/
+.idea/
+sample_test/outputs/
+.ipynb_checkpoints/
