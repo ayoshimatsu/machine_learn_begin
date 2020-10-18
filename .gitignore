@@ -1,4 +1,5 @@
 venv/
 .idea/
 sample_test/outputs/
-.ipynb_checkpoints/
+sample_test/.ipynb_checkpoints
+regression_sample/cache/
