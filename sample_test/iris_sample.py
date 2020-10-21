@@ -7,5 +7,3 @@ Y = pd.DataFrame(data.target, columns=["Species"])
 df = pd.concat([X, Y], axis=1)
 print(df.head())
 df.to_csv("outputs/output.csv")
-
-
