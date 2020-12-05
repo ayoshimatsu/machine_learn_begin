@@ -50,12 +50,26 @@ def mse_plane(x0, x1, t, w):
     mse = np.mean((y - t)**2)
     return mse
 
+# calculate coefficient(weight) =====
+def fit_plane(x0, x1, t):
+    c_tx0 = np.mean(t * x0) - np.mean(t) * np.mean(x0)
+    c_tx1 = np.mean(t * x1) - np.mean(t) * np.mean(x1)
+    c_x0x1 = np.mean(x0 * x1) - np.mean(x0) * np.mean(x1)
+    v_x0 = np.var(x0)
+    v_x1 = np.var(x1)
+    w0 = (c_tx1 * c_x0x1 - v_x1 * c_tx0) / (c_x0x1**2 - v_x0 * v_x1)
+    w1 = (c_tx0 * c_x0x1 - v_x0 * c_tx1) / (c_x0x1**2 - v_x0 * v_x1)
+    w2 = -w0 * np.mean(x0) - w1 * np.mean(x1) + np.mean(t)
+    return np.array([w0, w1, w2])
 
+
+# draw graph =====
 plt.figure(figsize=(6, 5))
 ax = plt.subplot(1, 1, 1, projection="3d")
-W = [1.5, 1, 90]
+W = fit_plane(X0, X1, T)
 show_plane(ax, W)
 show_data2(ax, X0, X1, T)
 mse = mse_plane(X0, X1, T, W)
+print(W)
 print("SD={0:.2f} cm".format(np.sqrt(mse)))
 plt.show()
