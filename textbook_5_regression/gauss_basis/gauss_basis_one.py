@@ -58,7 +58,7 @@ def show_gauss_func(w):
 # Main =====
 if __name__ == '__main__':
     plt.figure(figsize=(4, 4))
-    M = 4  # M = number of gaussian basis func
+    M = 3  # M = number of gaussian basis func
     W = fit_gauss_func(X, T, M)  # W = weight of predicted formula
     show_gauss_func(W)  # show calculated formula
     plt.plot(X, T, marker="o", linestyle="None",

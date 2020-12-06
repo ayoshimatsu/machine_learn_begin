@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from pathlib import Path
+import matplotlib.pyplot as plt
 from textbook_5_regression.gauss_basis import gauss_basis_one as gau
 
 # Load data =====
@@ -29,6 +30,23 @@ def kfold_gauss_func(x, t, m, k):
     return mse_train, mse_test
 
 
-M = 4
-K = 4
-print(kfold_gauss_func(X, T, M, K))
+if __name__ == '__main__':
+    M = range(2, 12)
+    K = 16
+    Cv_Gauss_train = np.zeros((K, len(M)))
+    Cv_Gauss_test = np.zeros((K, len(M)))
+    for i in range(0, len(M)):
+        Cv_Gauss_train[:, i], Cv_Gauss_test[:, i] = kfold_gauss_func(X, T, M[i], K)
+    mean_Gauss_train = np.sqrt(np.mean(Cv_Gauss_train, axis=0))
+    mean_Gauss_test = np.sqrt(np.mean(Cv_Gauss_test, axis=0))
+
+    # Create graph =====
+    plt.figure(figsize=(4, 3))
+    plt.plot(M, mean_Gauss_train, marker="o", linestyle="-", color="k",
+             markerfacecolor="w", label="training")
+    plt.plot(M, mean_Gauss_test, marker="o", linestyle="-", color="cornflowerblue",
+             markeredgecolor="black", label="test")
+    plt.legend(loc="lower left", fontsize=10)
+    plt.ylim(0, 20)
+    plt.grid(True)
+    plt.show()
