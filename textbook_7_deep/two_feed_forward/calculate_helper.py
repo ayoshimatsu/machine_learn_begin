@@ -34,31 +34,67 @@ def FNN(wv, M, K, x):
             y[n, k] = np.exp(a[n, k]) / wkz  # Ratio. Sum of them is 1.
     return y, a, z, b
 
-def CE_FNN(wv, M, K, x, t):
+# Cross entropy =====
+def cE_FNN(wv, M, K, x, t):
     N, D = x.shape
     y, a, z, b = FNN(wv, M, K, x)
     ce = -np.dot(t.reshape(-1), np.log(y.reshape(-1))) / N
     return ce
 
+# Numerical differentiation of cross entropy =====
 def dCE_FNN_num(wv, M, K, x, t):
     epsilon = 0.001
     dwv = np.zeros_like(wv)
     for iwv in range(len(wv)):
         wv_modified = wv.copy()
         wv_modified[iwv] = wv[iwv] - epsilon
-        mse1 = CE_FNN(wv_modified, M, K, x, t)
+        mse1 = cE_FNN(wv_modified, M, K, x, t)
         wv_modified[iwv] = wv[iwv] + epsilon
-        mse2 = CE_FNN(wv_modified, M, K, x, t)
+        mse2 = cE_FNN(wv_modified, M, K, x, t)
         dwv[iwv] = (mse2 - mse1) / (2 * epsilon)
     return dwv
 
-# -- dWVの表示 ------------------
+# Gradient method based on numerical differentiation =====
+# step : number of repetition
+def fit_FNN_num(wv_init, M, K, x_train, t_train, x_test, t_test, step, alpha):
+    wv = wv_init
+    err_train = np.zeros(step)
+    err_test = np.zeros(step)
+    wv_hist = np.zeros((step, len(wv_init)))
+    for i in range(step):
+        wv = wv - alpha * dCE_FNN_num(wv, M, K, x_train, t_train)
+        err_train[i] = cE_FNN(wv, M, K, x_train, t_train)
+        err_test[i] = cE_FNN(wv, M, K, x_test, t_test)
+        wv_hist[i, :] = wv
+    return wv, wv_hist, err_train, err_test
+
+# Show dWV ------------------
 def show_WV(wv, M):
     N = wv.shape[0]
     plt.bar(range(1, M * 3 + 1), wv[:M * 3], align="center", color='black')
     plt.bar(range(M * 3 + 1, N + 1), wv[M * 3:], align="center", color='cornflowerblue')
     plt.xticks(range(1, N + 1))
     plt.xlim(0, N + 1)
+
+def show_FNN(wv, M, K):
+    xn = 60  # 等高線表示の解像度
+    x0 = np.linspace(dh.X_range0[0], dh.X_range0[1], xn)
+    x1 = np.linspace(dh.X_range1[0], dh.X_range1[1], xn)
+    xx0, xx1 = np.meshgrid(x0, x1)
+    x = np.c_[np.reshape(xx0, [xn * xn, 1]), np.reshape(xx1, [xn * xn, 1])]
+    # print(x)
+    y, a, z, b = FNN(wv, M, K, x)
+    plt.figure(1, figsize=(4, 4))
+    for ic in range(K):
+        f = y[:, ic]
+        f = f.reshape(xn, xn)
+        f = f.T
+        # print(f.shape)
+        # print(f)
+        cont = plt.contour(xx0, xx1, f, levels=(0.5, 0.9), colors=['cornflowerblue', 'black'])
+        cont.clabel(fmt='%.1f', fontsize=9)
+    plt.xlim(dh.X_range0)
+    plt.ylim(dh.X_range1)
 
 
 if __name__ == '__main__':
@@ -75,7 +111,6 @@ if __name__ == '__main__':
     plt.figure(1, figsize=(5, 3))
     show_WV(dWV, M)
     plt.show()
-
 
     """
     WV = np.ones(15)

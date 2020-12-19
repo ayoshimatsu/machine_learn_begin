@@ -51,6 +51,7 @@ def show_data(x, t):
                  marker='o', color=color[k], alpha=0.8)
     plt.grid(True)
 
+
 if __name__ == '__main__':
     plt.figure(1, figsize=(8, 3.7))
     plt.subplot(1, 2, 1)
