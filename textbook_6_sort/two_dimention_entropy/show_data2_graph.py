@@ -1,7 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
 from textbook_6_sort.two_dimention_entropy import helper_entropy_two as help2
-
 
 x_data, t2_data, t3_data = help2.create_data(help2.N_data, help2.K_dist, help2.Pi, help2.Sig, help2.Mu)
 

@@ -31,11 +31,13 @@ def create_data(data_num, dist_num, class_ratio, data_dist, data_center):
     t2_data[:, 1] = t3_data[:, 1] | t3_data[:, 2]
     return x_data, t2_data, t3_data
 
+# Calculation of logistic ----------
+# 2 class sort ====
 def logistic2(x0, x1, w):
     y = 1 / (1 + np.exp(-(w[0] * x0 + w[1] * x1 + w[2])))
     return y
 
-# Error of entropy
+# Error of entropy =====
 def cee_logistic2(w, x, t):
     x_n = x.shape[0]
     y = logistic2(x[:, 0], x[:, 1], w)
@@ -61,6 +63,47 @@ def fit_logistic2(w_init, x, t):
     res = minimize(cee_logistic2, w_init, args=(x, t),
                    jac=dcee_logistic2, method="CG")
     return res.x
+
+# 3 class sort =====
+def logistic3(x0, x1, w):
+    w = w.reshape(K_dist, 3)
+    n = len(x1)
+    y = np.zeros((n, K_dist))
+    for k in range(K_dist):
+        y[:, k] = np.exp(w[k, 0] * x0 + w[k, 1] * x1 + w[k, 2])
+    wk = np.sum(y, axis=1)
+    wk = y.T / wk
+    y = wk.T
+    return y
+
+# Error of entropy =====
+def cee_logistic3(w, x, t):
+    x_n = x.shape[0]
+    y = logistic3(x[:, 0], x[:, 1], w)
+    cee = 0
+    data_num, k_num = y.shape
+    for n in range(data_num):
+        for k in range(k_num):
+            cee = cee - (t[n, k] * np.log(y[n, k]))
+    cee = cee / x_n
+    return cee
+
+# Differentiate error of entropy =====
+def dcee_logistic3(w, x, t):
+    x_n = x.shape[0]
+    y = logistic3(x[:, 0], x[:, 1], w)
+    dcee = np.zeros((K_dist, 3))  # number of classes and number of input
+    data_num, k_num = y.shape
+    for n in range(data_num):
+        for k in range(k_num):
+            dcee[k, :] = dcee[k, :] - (t[n, k] - y[n, k])*np.r_[x[n, :], 1]
+    dcee = dcee / x_n
+    return dcee.reshape(-1)
+
+def fit_logistic3(w_init, x, t):
+    res = minimize(cee_logistic3, w_init, args=(x, t), jac=dcee_logistic3, method="CG")
+    return res.x
+
 
 # データ表示 --------------------------
 def show_data2(x, t):
@@ -102,9 +145,27 @@ def show_contour_logistic2(w):
     cont.clabel(fmt='%.1f', fontsize=10)
     plt.grid(True)
 
+def show_contour_logistic3(w):
+    xn = 30  # パラメータの分割数
+    x0 = np.linspace(X_range0[0], X_range0[1], xn)
+    x1 = np.linspace(X_range1[0], X_range1[1], xn)
+    xx0, xx1 = np.meshgrid(x0, x1)
+    y = np.zeros((xn, xn, 3))
+    for i in range(xn):
+        wk = logistic3(xx0[:, i], xx1[:, i], w)
+        for j in range(3):
+            y[:, i, j] = wk[:, j]
+    for j in range(3):
+        cont = plt.contour(xx0, xx1, y[:, :, j],
+                           levels=(0.5, 0.9), colors=['cornflowerblue', 'k'])
+        cont.clabel(fmt='%.1f', fontsize=9)
+    plt.grid(True)
+
 
 if __name__ == '__main__':
     # test ---
     x_data, t2_data, t3_data = create_data(N_data, K_dist, Pi, Sig, Mu)
-    W = [-1, -1, -1]
-    print(dcee_logistic2(W, x_data, t2_data))
+    W = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    # y = logistic3(x_data[:3, 0], x_data[:3, 1], W)
+    # print(cee_logistic3(W, x_data, t3_data))
+    print(dcee_logistic3(W, x_data, t3_data))
