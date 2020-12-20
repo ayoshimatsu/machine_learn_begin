@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-from textbook_7_deep.two_feed_forward import data_helper as dh
+from textbook_7_deep.neural_network import data_helper as dh
 
 
 def sigmoid(x):
@@ -9,7 +9,7 @@ def sigmoid(x):
     return y
 
 # forward neural network =====
-def FNN(wv, M, K, x):
+def fNN(wv, M, K, x):
     N, D = x.shape  # 入力次元
     w = wv[:M * (D + 1)] # 中間層ニューロンへの重み
     w = w.reshape(M, (D + 1))
@@ -37,7 +37,7 @@ def FNN(wv, M, K, x):
 # Cross entropy =====
 def cE_FNN(wv, M, K, x, t):
     N, D = x.shape
-    y, a, z, b = FNN(wv, M, K, x)
+    y, a, z, b = fNN(wv, M, K, x)
     ce = -np.dot(t.reshape(-1), np.log(y.reshape(-1))) / N
     return ce
 
@@ -83,7 +83,7 @@ def show_FNN(wv, M, K):
     xx0, xx1 = np.meshgrid(x0, x1)
     x = np.c_[np.reshape(xx0, [xn * xn, 1]), np.reshape(xx1, [xn * xn, 1])]
     # print(x)
-    y, a, z, b = FNN(wv, M, K, x)
+    y, a, z, b = fNN(wv, M, K, x)
     plt.figure(1, figsize=(4, 4))
     for ic in range(K):
         f = y[:, ic]

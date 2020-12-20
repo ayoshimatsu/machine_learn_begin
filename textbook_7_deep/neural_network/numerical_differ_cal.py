@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from scipy.optimize import minimize
-from textbook_7_deep.two_feed_forward import data_helper as dh
-from textbook_7_deep.two_feed_forward import calculate_helper as ch
+from textbook_7_deep.neural_network import data_helper as dh
+from textbook_7_deep.neural_network import calculate_helper as ch
 
 startTime = time.time()
 M = 2
