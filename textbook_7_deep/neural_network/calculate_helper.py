@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from textbook_7_deep.neural_network import data_helper as dh
 
-
 def sigmoid(x):
     y = 1 / (1 + np.exp(-x))
     return y
@@ -11,9 +10,9 @@ def sigmoid(x):
 # forward neural network =====
 def fNN(wv, M, K, x):
     N, D = x.shape  # 入力次元
-    w = wv[:M * (D + 1)] # 中間層ニューロンへの重み
+    w = wv[:M * (D + 1)]  # 中間層ニューロンへの重み
     w = w.reshape(M, (D + 1))
-    v = wv[M * (D + 1):] # 出力層ニューロンへの重み
+    v = wv[M * (D + 1):]  # 出力層ニューロンへの重み
     v = v.reshape((K, M + 1))
     b = np.zeros((N, M + 1))  # 中間層ニューロンの入力総和
     z = np.zeros((N, M + 1))  # 中間層ニューロンの出力
@@ -81,17 +80,19 @@ def show_FNN(wv, M, K):
     x0 = np.linspace(dh.X_range0[0], dh.X_range0[1], xn)
     x1 = np.linspace(dh.X_range1[0], dh.X_range1[1], xn)
     xx0, xx1 = np.meshgrid(x0, x1)
+    # x: 3600 x 2
     x = np.c_[np.reshape(xx0, [xn * xn, 1]), np.reshape(xx1, [xn * xn, 1])]
-    # print(x)
+    print(x)
+    print(x.shape)
     y, a, z, b = fNN(wv, M, K, x)
     plt.figure(1, figsize=(4, 4))
     for ic in range(K):
         f = y[:, ic]
         f = f.reshape(xn, xn)
-        f = f.T
+        # f = f.T
         # print(f.shape)
         # print(f)
-        cont = plt.contour(xx0, xx1, f, levels=(0.5, 0.9), colors=['cornflowerblue', 'black'])
+        cont = plt.contour(xx0, xx1, f, levels=[0.5, 0.9], colors=['cornflowerblue', 'black'])
         cont.clabel(fmt='%.1f', fontsize=9)
     plt.xlim(dh.X_range0)
     plt.ylim(dh.X_range1)

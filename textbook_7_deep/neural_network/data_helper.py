@@ -44,7 +44,7 @@ def distribute_data_into_test_and_training(input, result, training_ratio):
 # Show data --------------------------
 def show_data(x, t):
     data_num, class_num = t.shape
-    color = [[.5, .5, .5], [1, 1, 1], [0, 0, 0]]  # number od class
+    color = [[0, 0, 0], [.5, .5, .5], [1, 1, 1]]  # number od class
     for k in range(class_num):
         plt.plot(x[t[:, k] == 1, 0], x[t[:, k] == 1, 1],
                  linestyle='none', markeredgecolor='black',
