@@ -3,3 +3,4 @@ venv/
 sample_test/outputs/
 sample_test/.ipynb_checkpoints
 regression_sample/cache/
+textbook_8_deep_practice/number_data.npz

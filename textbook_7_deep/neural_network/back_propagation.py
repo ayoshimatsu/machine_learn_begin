@@ -66,25 +66,7 @@ def show_dWV(wv, M):
     plt.xticks(range(1, N+1))
     plt.xlim(0, N+1)
 
-def show_analytical_result(M, K, WV, WV_hist, Err_train, Err_test, x_test, t_test):
-    plt.figure(1, figsize=(8, 8))
-    plt.subplots_adjust(wspace=0.5)
-
-    plt.subplot(2, 2, 1)
-    plt.plot(Err_train, "black", label="training")
-    plt.plot(Err_test, "cornflowerblue", label="test")
-    plt.legend()
-
-    plt.subplot(2, 2, 2)
-    plt.plot(WV_hist[:, :M*3], "black")
-    plt.plot(WV_hist[:, M*3:], "cornflowerblue")
-
-    plt.subplot(2, 2, 3)
-    dh.show_data(x_test, t_test)
-    ch.show_FNN(WV, M, K)
-    plt.show()
-
-# verify result =====
+# show graph =====
 def easy_compare_numerical_analytical(M, K, x_train, t_train):
     nWV = M * 3 + K * (M + 1)
     WV = np.random.normal(0, 1, nWV)  # init weight
@@ -106,6 +88,25 @@ def easy_compare_numerical_analytical(M, K, x_train, t_train):
     plt.subplot(1, 2, 2)
     show_dWV(dWV_num, M)
     plt.title("numerical")
+    plt.show()
+
+# show result of back propagation
+def show_analytical_result(M, K, WV, WV_hist, Err_train, Err_test, x_test, t_test):
+    plt.figure(1, figsize=(8, 8))
+    plt.subplots_adjust(wspace=0.5)
+
+    plt.subplot(2, 2, 1)
+    plt.plot(Err_train, "black", label="training")
+    plt.plot(Err_test, "cornflowerblue", label="test")
+    plt.legend()
+
+    plt.subplot(2, 2, 2)
+    plt.plot(WV_hist[:, :M*3], "black")
+    plt.plot(WV_hist[:, M*3:], "cornflowerblue")
+
+    plt.subplot(2, 2, 3)
+    dh.show_data(x_test, t_test)
+    ch.show_FNN(WV, M, K)
     plt.show()
 
 
