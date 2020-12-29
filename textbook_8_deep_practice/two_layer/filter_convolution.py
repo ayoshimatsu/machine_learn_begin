@@ -27,7 +27,7 @@ def create_data():
     return x_train, y_train, x_test, y_test
 
 
-def filter_example(aX_train):
+def show_filter_example(aX_train):
     id_img = 2
     myFil1 = np.array([[1, 1, 1],
                        [1, 1, 1],
@@ -67,7 +67,6 @@ def filter_example(aX_train):
     plt.ylim(29, -1)
     plt.show()
 
-
 def cNN_calculation(aX_train, aY_train, aX_test, aY_test):
     model = Sequential()
     # like middle layer. 28 * 28 * 8. 8 filter.
@@ -87,10 +86,54 @@ def cNN_calculation(aX_train, aY_train, aX_test, aY_test):
 
     return model
 
+def show_predicted_filter(aModel, aX_test):
+    plt.figure(1, figsize=(12, 2.5))
+    plt.gray()
+    plt.subplots_adjust(wspace=0.2, hspace=0.2)
+    plt.subplot(2, 9, 10)
+    id_img = 12
+    x_img = aX_test[id_img, :, :, 0]
+    img_h = 28
+    img_w = 28
+    x_img = x_img.reshape(img_h, img_w)
+    plt.pcolor(-x_img)
+    plt.xlim(0, img_h)
+    plt.ylim(img_w, 0)
+    plt.xticks([], "")
+    plt.yticks([], "")
+
+    plt.title("Original")
+    w = aModel.layers[0].get_weights()[0]  # (A)
+    max_w = np.max(w)
+    min_w = np.min(w)
+    for i in range(8):
+        plt.subplot(2, 9, i + 2)
+        w1 = w[:, :, 0, i]
+        w1 = w1.reshape(3, 3)
+        plt.pcolor(-w1, vmin=min_w, vmax=max_w)
+        plt.xlim(0, 3)
+        plt.ylim(3, 0)
+        plt.xticks([], "")
+        plt.yticks([], "")
+        plt.title("%d" % i)
+        plt.subplot(2, 9, i + 11)
+        out_img = np.zeros_like(x_img)
+        # フィルター処理
+        for ih in range(img_h - 3 + 1):
+            for iw in range(img_w - 3 + 1):
+                img_part = x_img[ih:ih + 3, iw:iw + 3]
+                out_img[ih + 1, iw + 1] = np.dot(img_part.reshape(-1), w1.reshape(-1))
+        plt.pcolor(-out_img)
+        plt.xlim(0, img_w)
+        plt.ylim(img_h, 0)
+        plt.xticks([], "")
+        plt.yticks([], "")
+    plt.show()
+
 
 if __name__ == '__main__':
     x_train, y_train, x_test, y_test = create_data()
-    # filter_example(x_train)
+    # show_filter_example(x_train)
     model = cNN_calculation(x_train, y_train, x_test, y_test)
-    sig.show_prediction(model, x_test, y_test)
-
+    # sig.show_prediction(model, x_test, y_test)
+    show_predicted_filter(model, x_test)
