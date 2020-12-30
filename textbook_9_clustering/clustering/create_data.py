@@ -1,5 +1,7 @@
 import numpy as np
+import os
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 # data to create init data =====
 N = 100
@@ -16,7 +18,7 @@ Mu_test = np.array([[-2, 1], [-2, 0], [-2, -1]])
 R = np.c_[np.ones((N, 1), dtype=int), np.zeros((N, 2), dtype=int)]
 
 # create data --------------------------------
-def create_data():
+def create_data(file):
     np.random.seed(1)
     T3 = np.zeros((N, 3), dtype=np.uint8)
     X = np.zeros((N, 2))
@@ -30,7 +32,7 @@ def create_data():
         for k in range(2):
             X[n, k] = (np.random.randn() * Sig[T3[n, :] == 1, k] + Mu[T3[n, :] == 1, k])
 
-    np.savez('data_ch9.npz', X=X, X_range0=X_range0, X_range1=X_range1)
+    np.savez(file, X=X, X_range0=X_range0, X_range1=X_range1)
     return X, T3
 
 # calculate distance =====
@@ -90,7 +92,10 @@ def show_prm(x, r, mu, col, title):
 
 
 if __name__ == '__main__':
-    x2_data, t3_data = create_data()  # x: 2 dimension, t: 3 dimension
+    current_dir = os.path.dirname(__file__)
+    parent_dir = str(Path(current_dir).resolve().parent)
+
+    x2_data, t3_data = create_data(parent_dir + "/data_ch9.npz")  # x: 2 dimension, t: 3 dimension
     R = np.c_[np.ones((N, 1), dtype=int), np.zeros((N, 2), dtype=int)]
     max_it = 10
     it = 0
